@@ -38,3 +38,10 @@
 - Implemented `render_html` to generate a self-contained 3×2 HTML grid with big metric numbers, units, red/green breach status badges, and inline SVG sparklines with dashed threshold lines.
 - Added a CLI interface supporting `--logs`, `--config`, and `--out` options with UTF-8 stdio configuration and one-line summaries printed per panel.
 - Added comprehensive unit and integration tests in `tests/test_build_dashboard.py` covering percentiles, error/tool success rates, metric exactness, time window filtering, threshold breach evaluation, HTML structure, and CLI execution.
+
+## Task 7: Secret and PII scan script
+- Implemented `scripts/scan_repo.py` to scan git-tracked and untracked repository files for secrets and raw PII.
+- Configured pattern detection for Langfuse public/secret keys, generic API keys/secrets, and raw PII with allowlisting for test files, sample queries/answers, empty `.env.example` values, and redacted tokens.
+- Added verification to ensure forbidden sensitive files (`config/challenge.json`, `.env`) are not tracked by git.
+- Refined the Vietnamese address PII regex in `app/pii.py` to require capitalized proper names on non-keyword street addresses, eliminating false positives on documentation numbers and time expressions.
+- Created comprehensive unit and integration tests in `tests/test_scan_repo.py`, ensuring all tests pass cleanly.
