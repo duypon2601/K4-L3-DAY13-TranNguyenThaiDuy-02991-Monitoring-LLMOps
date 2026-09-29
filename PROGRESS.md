@@ -31,3 +31,10 @@
 - Configured three symptom-based alerts (`high_latency_p95`, `high_error_rate`, `cost_budget_burn`) with Slack routing in `config/alert_rules.yaml`.
 - Completed incident runbooks in `docs/alerts.md` detailing Metrics → Logs → Traces check sequences and mitigation commands for each scenario.
 - Created `tests/test_slo_alerts.py` validating SLO calculations, alert rule schemas, and runbook cross-references.
+
+## Task 6: Local dashboard generator (6 panels from logs)
+- Added `data/dashboard.html` to `.gitignore`.
+- Created `scripts/build_dashboard.py` to parse structlog JSON logs, filter records by time window, and compute aggregations for all 6 contract panels (latency, traffic, errors, cost, tokens, quality) including threshold breach evaluations.
+- Implemented `render_html` to generate a self-contained 3×2 HTML grid with big metric numbers, units, red/green breach status badges, and inline SVG sparklines with dashed threshold lines.
+- Added a CLI interface supporting `--logs`, `--config`, and `--out` options with UTF-8 stdio configuration and one-line summaries printed per panel.
+- Added comprehensive unit and integration tests in `tests/test_build_dashboard.py` covering percentiles, error/tool success rates, metric exactness, time window filtering, threshold breach evaluation, HTML structure, and CLI execution.
