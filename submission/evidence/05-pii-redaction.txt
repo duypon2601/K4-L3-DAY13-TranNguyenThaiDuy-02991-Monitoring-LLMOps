@@ -1,0 +1,8 @@
+# Input: 2 request POST /chat với PII giả (dữ liệu test, không phải người thật):
+#   req-0000beef: message chứa 1 email, 1 SĐT VN 10 số, 1 CCCD 12 số, 1 số thẻ 16 số
+#   req-0000cafe: message chứa 1 số thẻ 16 số và 1 CCCD 12 số
+# (Input thô cố ý không lưu ở đây để evidence không chứa PII nguyên văn.)
+# Output trong data/logs.jsonl (event request_received):
+{"service": "api", "payload": {"message_preview": "Toi la test, email [REDACTED_EMAIL], sdt [REDACTED_PHONE_VN], CCCD [REDACTED_CCC..."}, "event": "request_received", "feature": "qa", "session_id": "s-pii", "model": "claude-sonnet-4-5", "env": "dev", "user_id_hash": "a02963f5076c", "correlation_id": "req-0000beef", "level": "info", "ts": "2026-09-29T12:55:30.086983Z"}
+{"service": "api", "payload": {"message_preview": "The [REDACTED_CREDIT_CARD], CCCD [REDACTED_CCCD]"}, "event": "request_received", "feature": "qa", "session_id": "s-pii", "model": "claude-sonnet-4-5", "env": "dev", "user_id_hash": "a02963f5076c", "correlation_id": "req-0000cafe", "level": "info", "ts": "2026-09-29T12:55:36.107668Z"}
+# Số lần xuất hiện của các giá trị PII giả trong data/logs.jsonl: 0

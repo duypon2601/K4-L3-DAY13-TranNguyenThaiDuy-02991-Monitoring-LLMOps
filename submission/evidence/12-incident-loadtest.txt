@@ -1,0 +1,46 @@
+== BASELINE START 2026-09-29T12:54:36Z
+[200] req-29f00b5d | qa | 1950.0ms
+[200] req-8e0285a9 | qa | 268.9ms
+[200] req-f7dbf51d | summary | 275.4ms
+[200] req-aacc08c5 | qa | 274.9ms
+[200] req-3e8326f6 | qa | 267.7ms
+[200] req-9a87a108 | summary | 353.6ms
+[200] req-1c822c89 | qa | 266.7ms
+[200] req-a5429c70 | qa | 268.4ms
+[200] req-d4958ffc | qa | 262.8ms
+[200] req-5ec5edb4 | qa | 348.1ms
+[200] req-e0c0b50f | qa | 328.8ms
+[200] req-5722583f | qa | 264.4ms
+[200] req-774d9f68 | summary | 264.5ms
+[200] req-c43727ad | qa | 275.1ms
+[200] req-61dfce16 | qa | 349.3ms
+[200] req-2325ff80 | summary | 274.0ms
+[200] req-51101248 | qa | 268.6ms
+[200] req-40b298d4 | qa | 399.5ms
+[200] req-ebd7d9e8 | qa | 265.4ms
+[200] req-7ff635ac | qa | 274.9ms
+== BASELINE END 2026-09-29T12:54:43Z
+== INCIDENT ENABLE 2026-09-29T12:54:43Z
+200 {'ok': True, 'incidents': {'rag_slow': True, 'tool_fail': False, 'cost_spike': False}}
+Challenge: day13-k4-l3a-monitoring-llmops-v1 | Cohort: K4
+[200] req-f03fc88b | monitoring | 11136.7ms
+[200] req-05878162 | monitoring | 11136.7ms
+[200] req-adc32418 | monitoring | 13967.6ms
+[200] req-acc6be00 | monitoring | 13967.3ms
+[200] req-cd8c0e78 | monitoring | 13967.6ms
+Challenge: day13-k4-l3a-monitoring-llmops-v1 | Cohort: K4
+[200] req-905d31b0 | monitoring | 11249.2ms
+[200] req-f44ac7c5 | monitoring | 11249.5ms
+[200] req-ee0730fe | monitoring | 14043.2ms
+[200] req-99332138 | monitoring | 14043.5ms
+[200] req-a7de17a5 | monitoring | 14043.6ms
+== INCIDENT DISABLE 2026-09-29T12:55:12Z
+200 {'ok': True, 'incidents': {'rag_slow': False, 'tool_fail': False, 'cost_spike': False}}
+== RECOVERY START 2026-09-29T12:55:12Z
+Challenge: day13-k4-l3a-monitoring-llmops-v1 | Cohort: K4
+[200] req-395df821 | monitoring | 1153.1ms
+[200] req-162910a9 | monitoring | 1502.8ms
+[200] req-2f9a08f6 | monitoring | 1502.5ms
+[200] req-1b7b5a02 | monitoring | 1503.3ms
+[200] req-6aee7e32 | monitoring | 1502.9ms
+== RECOVERY END 2026-09-29T12:55:13Z
