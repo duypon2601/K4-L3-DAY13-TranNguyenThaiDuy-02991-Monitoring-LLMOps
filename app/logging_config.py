@@ -23,16 +23,32 @@ class JsonlFileProcessor:
 
 
 
-def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
-    payload = event_dict.get("payload")
-    if isinstance(payload, dict):
-        event_dict["payload"] = {
-            k: scrub_text(v) if isinstance(v, str) else v for k, v in payload.items()
-        }
-    if "event" in event_dict and isinstance(event_dict["event"], str):
-        event_dict["event"] = scrub_text(event_dict["event"])
-    return event_dict
+_EXCLUDED_KEYS = {"ts", "level", "correlation_id"}
 
+
+def _scrub_nested(val: Any) -> Any:
+    if isinstance(val, str):
+        return scrub_text(val)
+    if isinstance(val, dict):
+        return {k: _scrub_nested(v) for k, v in val.items()}
+    if isinstance(val, list):
+        return [_scrub_nested(item) for item in val]
+    if isinstance(val, tuple):
+        return tuple(_scrub_nested(item) for item in val)
+    return val
+
+
+def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+    for key, value in list(event_dict.items()):
+        if key in _EXCLUDED_KEYS:
+            continue
+        if key == "payload":
+            event_dict[key] = _scrub_nested(value)
+        elif isinstance(value, str):
+            event_dict[key] = scrub_text(value)
+        elif isinstance(value, (dict, list, tuple)):
+            event_dict[key] = _scrub_nested(value)
+    return event_dict
 
 
 def configure_logging() -> None:
@@ -42,8 +58,7 @@ def configure_logging() -> None:
             merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
-            # TODO: Register your PII scrubbing processor here
-            # scrub_event,
+            scrub_event,
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             JsonlFileProcessor(),
