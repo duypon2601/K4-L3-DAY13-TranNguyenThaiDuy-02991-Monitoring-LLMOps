@@ -13,3 +13,8 @@ config/challenge.json
 .auto-logs/
 REVIEW.md
 TASK_SUMMARY.md
+
+# autowf local files
+.autowf.env
+PLAN.md
+PROGRESS.md
