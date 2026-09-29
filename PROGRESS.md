@@ -25,3 +25,9 @@
 - Wrapped `retrieve(message)` in `LabAgent.run` with a child retriever observation, recording document count and capturing errors.
 - Wrapped `llm.generate` in `LabAgent.run` with a child generation observation containing prompt metadata, token usage, estimated cost, and completion start time.
 - Created `tests/test_agent_child_observations.py` covering observation lifecycle, metadata, PII redaction, and error handling.
+
+## Task 5: SLO, alert rules and runbooks
+- Updated `config/slo.yaml` with an explanatory note on the 3000 ms / 99.5% baseline and computed error budget parameters.
+- Configured three symptom-based alerts (`high_latency_p95`, `high_error_rate`, `cost_budget_burn`) with Slack routing in `config/alert_rules.yaml`.
+- Completed incident runbooks in `docs/alerts.md` detailing Metrics → Logs → Traces check sequences and mitigation commands for each scenario.
+- Created `tests/test_slo_alerts.py` validating SLO calculations, alert rule schemas, and runbook cross-references.

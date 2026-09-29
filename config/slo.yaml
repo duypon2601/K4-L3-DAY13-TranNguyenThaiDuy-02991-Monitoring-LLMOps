@@ -7,7 +7,12 @@ primary_slo:
     total_event: 'event == "request_received"'
   target_percent: 99.5
   error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình.
+  note: Ngưỡng latency 3000 ms và target 99.5% trong cửa sổ 28 ngày phù hợp với baseline ~150-400 ms của FakeLLM, tạo biên độ an toàn gấp 7-10 lần khi có jitter mạng hoặc RAG retrieval mà vẫn phát hiện sớm suy giảm hiệu năng nghiêm trọng.
+  error_budget:
+    allowed_bad_ratio: 0.005
+    example_per_10000_requests: 50
+    time_equivalent_hours: 3.36
+    burn_rate_alert: Cảnh báo khi tốc độ tiêu thụ error budget vượt quá 2x (cạn kiệt trong 14 ngày) hoặc 14.4x (tiêu thụ 2% budget trong 1 giờ) trên cửa sổ ngắn.
 guardrails:
   error_rate_pct_max: 2
   daily_cost_usd_max: 2.5
