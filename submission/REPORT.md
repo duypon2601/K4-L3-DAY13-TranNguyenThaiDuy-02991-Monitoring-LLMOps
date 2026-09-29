@@ -8,7 +8,7 @@
 - **MSSV:** 02991
 - **Lớp:** K4-L3A
 - **Repository URL:** https://github.com/duypon2601/K4-L3-DAY13-TranNguyenThaiDuy-02991-Monitoring-LLMOps
-- **Commit SHA cuối:** <CẦN ĐIỀN SAU KHI PUSH — `git rev-parse HEAD`>
+- **Commit SHA cuối:** `d88de24408d6caba1a69418163ac8a61a7ab4ca8` (commit chứa toàn bộ source, config và evidence; commit ngay sau chỉ ghi SHA này vào report)
 - **Challenge ID:** `day13-k4-l3a-monitoring-llmops-v1` (incident `rag_slow`, seed 1311)
 - **Tên project Langfuse cá nhân:** `day13-k4-l3a-02991`
 
