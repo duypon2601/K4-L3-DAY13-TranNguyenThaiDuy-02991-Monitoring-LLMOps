@@ -12,3 +12,10 @@
 - Enhanced scrub_event in app/logging_config.py to recursively redact PII in nested dict/list structures inside payload and in top-level strings excluding ts, level, and correlation_id.
 - Registered scrub_event processor right after TimeStamper and before JsonlFileProcessor and JSONRenderer.
 - Created tests/test_logging_enrichment.py to verify nested payload scrubbing, context enrichment propagation, raw PII/user ID masking, and a 100/100 score from scripts/validate_logs.py.
+
+## Task 3: Complete PII patterns and tests
+- Reordered PII_PATTERNS so credit_card executes before cccd and phone_vn, preserving email as the first pattern.
+- Added Vietnamese passport pattern (passport) matching an uppercase letter followed by 7 digits with word boundaries.
+- Added Vietnamese address pattern (address_vn) matching house numbers followed by case-insensitive street keywords and names while preserving English text.
+- Created tests/test_pii_extended.py covering email, phone formats, CCCD, 16-digit cards, passports, Vietnamese addresses, and English text preservation.
+- Verified all tests pass cleanly using .venv/bin/python -m pytest -q.
