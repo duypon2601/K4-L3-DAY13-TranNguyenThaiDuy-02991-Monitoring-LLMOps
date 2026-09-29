@@ -9,3 +9,6 @@ data/audit.jsonl
 config/challenge.json
 .pytest_cache/
 .antigravity/
+.auto-logs/
+REVIEW.md
+TASK_SUMMARY.md
