@@ -24,10 +24,10 @@
 | Structured log | [`evidence/04-structured-log.txt`](evidence/04-structured-log.txt) |
 | PII redaction | [`evidence/05-pii-redaction.txt`](evidence/05-pii-redaction.txt) |
 | Trace list | [`evidence/06-trace-list.png`](evidence/06-trace-list.png) |
-| Trace waterfall | [`evidence/07-trace-waterfall.png`](evidence/07-trace-waterfall.png) |
-| Trace metadata | [`evidence/08-trace-metadata.png`](evidence/08-trace-metadata.png) |
+| Trace waterfall | [`evidence/07-trace-waterfall.png`](evidence/07-trace-waterfall.png) (trace `6de846a2…`) |
+| Trace metadata | [`evidence/08-trace-metadata.png`](evidence/08-trace-metadata.png) (trace `567302f1…`, `prompt_version=2`) |
 | Prompt versions | [`evidence/09-prompt-versions.png`](evidence/09-prompt-versions.png) |
-| Prompt rollback | [`evidence/10-prompt-rollback.png`](evidence/10-prompt-rollback.png) |
+| Prompt rollback | [`evidence/10a-before-rollback.png`](evidence/10a-before-rollback.png), [`evidence/10b-after-rollback.png`](evidence/10b-after-rollback.png) |
 | Dashboard runtime | [`evidence/11-dashboard-overview.png`](evidence/11-dashboard-overview.png) |
 | Incident metric | [`evidence/11-dashboard-overview.png`](evidence/11-dashboard-overview.png) (panel latency p95 = 2833 ms), [`evidence/12-incident-loadtest.txt`](evidence/12-incident-loadtest.txt) (mốc thời gian bật/tắt incident) |
 | Incident log | [`evidence/13-incident-log.txt`](evidence/13-incident-log.txt) |
@@ -40,7 +40,7 @@
 | `validate_logs.py` | 30/100 | 100/100 | Starter thiếu field bắt buộc, correlation ID và enrichment; sau Task 1 và Task 2 thì cả 4 tiêu chí đều PASSED |
 | `validate_dashboard.py` | 6/6 | 6/6 | Contract giữ nguyên; dashboard runtime sinh bằng `scripts/build_dashboard.py` |
 | `pytest` | 22 passed | 89 passed | Thêm test cho middleware, PII, tracing, SLO/alert, dashboard, scan, report |
-| Số traces hợp lệ | 0 (starter chỉ có root, chưa có child) | 37 | Mỗi trace có `lab-agent-run` → `retrieval` + `llm-generation`, metadata có `correlation_id` |
+| Số traces hợp lệ | 0 (starter chỉ có root, chưa có child) | 41 | Mỗi trace có `lab-agent-run` → `retrieval` + `llm-generation`, metadata có `correlation_id` |
 | Số PII leak | — | 0 | Không còn email/SĐT/CCCD/thẻ giả nào trong `data/logs.jsonl` và trace metadata |
 | Latency P95 / TTFT P95 | 350 ms / 55 ms (bình thường, bỏ request cold-start 1898 ms) | 2864 ms / 55 ms khi incident; 345 ms / 55 ms sau khi tắt | TTFT không đổi → chậm nằm trước bước generation |
 | Retrieval success rate | 100% | 100% | `rag_slow` làm chậm chứ không làm lỗi retrieval |
@@ -58,10 +58,19 @@
 - **Cấu trúc root/retrieval/generation observations:** Được triển khai trong `app/agent.py` và `app/tracing.py`. Khi `LabAgent.run` được gọi, adapter tạo một root trace/span đại diện cho toàn bộ lượt tương tác (nhận input đã scrub PII). Tiếp theo, bước truy xuất tri thức tạo một child observation loại `retriever` hoặc `span` (tên `retrieval`) ghi nhận query, latency và cờ `tool_success`. Cuối cùng, bước gọi mô hình tạo một child observation loại `generation` (tên `llm-generation`) ghi nhận tên model, prompt, số lượng `tokens_in`, `tokens_out`, thời gian TTFT/latency, chi phí ước tính `cost_usd` và output đã scrub PII.
 - **Cách nối trace với log:** Được liên kết thông qua trường `correlation_id`. Khi middleware sinh hoặc nhận `correlation_id`, giá trị này được gắn vào metadata của trace Langfuse (`metadata={"correlation_id": correlation_id}`) và được gán vào structlog contextvars. Nhờ đó, từ một dòng log lỗi trong `data/logs.jsonl`, ta trích xuất được `correlation_id` và dùng nó để tìm kiếm trace chính xác trên Langfuse, và ngược lại.
 - **Prompt name:** `day13-chat` (theo biến môi trường `LANGFUSE_PROMPT_NAME`)
-- **Version/label baseline:** <CẦN ĐIỀN>
-- **Version/label candidate:** <CẦN ĐIỀN>
-- **Trace ID của mỗi version:** <CẦN ĐIỀN>
-- **Cách promote và rollback `production`:** Quản lý prompt thông qua Langfuse Prompt Management hoặc API adapter trong `app/tracing.py`: để promote một prompt candidate, ta gán label `production` cho version mới sau khi kiểm thử chất lượng; khi phát hiện lỗi hoặc suy giảm chất lượng, ta thực hiện rollback bằng cách chuyển lại label `production` về version ổn định trước đó (baseline), hệ thống tự động tải prompt theo label `production` mà không cần khởi động lại dịch vụ hay deploy lại mã nguồn.
+- **Version/label baseline:** v1 (commit message `v1 baseline`, template 3 biến gốc), labels `baseline` + `production` lúc tạo.
+- **Version/label candidate:** v2 (`v2: limit answer to 3 bullets`, thêm dòng `Answer in at most 3 short bullet points.`), label `candidate`.
+- **Trace ID của mỗi version** (cùng input `How should an engineer investigate tail latency?`, metadata `prompt_source=langfuse`):
+
+  | Bước | Label app dùng | correlation_id | Trace ID | `prompt_version` |
+  |---|---|---|---|---|
+  | Baseline | `baseline` | `req-0000b004` | `a80b672f8d2b9e65125df54783f0a696` | 1 |
+  | Candidate | `candidate` | `req-0000c002` | `adeab7b6d62a0d068d83c056af71d60b` | 2 |
+  | Promote `production` → v2 | `production` | `req-0000d003` | `567302f1246e08b8abc918fe723baa3b` | 2 |
+  | Rollback `production` → v1 | `production` | `req-0000e005` | `3e83285c2a3ecbdaa9036575d5213a0f` | 1 |
+
+  Ảnh: [`evidence/09-prompt-versions.png`](evidence/09-prompt-versions.png), trước rollback [`evidence/10a-before-rollback.png`](evidence/10a-before-rollback.png) (v2 giữ `production`), sau rollback [`evidence/10b-after-rollback.png`](evidence/10b-after-rollback.png) (v1 giữ `production`).
+- **Cách promote và rollback `production`:** Promote/rollback bằng Langfuse Public API `PATCH /api/public/v2/prompts/day13-chat/versions/{v}` với `newLabels` (label là duy nhất trong một prompt nên gán `production` cho version này sẽ gỡ nó khỏi version kia); app đọc prompt qua `client.get_prompt(name, label=LANGFUSE_PROMPT_LABEL)` trong `app/prompt_management.py`. Về nguyên tắc: để promote một prompt candidate, ta gán label `production` cho version mới sau khi kiểm thử chất lượng; khi phát hiện lỗi hoặc suy giảm chất lượng, ta thực hiện rollback bằng cách chuyển lại label `production` về version ổn định trước đó (baseline), hệ thống tự tải prompt theo label `production` mà không cần deploy lại mã nguồn (SDK cache prompt 60 s nên thay đổi có hiệu lực sau tối đa 60 s).
 
 ## 6. Dashboard, SLO và alerts
 
