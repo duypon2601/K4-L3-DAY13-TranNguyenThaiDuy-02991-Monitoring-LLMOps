@@ -45,3 +45,10 @@
 - Added verification to ensure forbidden sensitive files (`config/challenge.json`, `.env`) are not tracked by git.
 - Refined the Vietnamese address PII regex in `app/pii.py` to require capitalized proper names on non-keyword street addresses, eliminating false positives on documentation numbers and time expressions.
 - Created comprehensive unit and integration tests in `tests/test_scan_repo.py`, ensuring all tests pass cleanly.
+
+## Task 8: Draft REPORT.md and README notes
+- Drafted `submission/REPORT.md` in Vietnamese with student information, implementation details for Tasks 1–7 across logging, tracing, dashboard/SLO, and self-evaluation, while setting run-specific values to `<CẦN ĐIỀN>`.
+- Updated `submission/evidence/README.md` with instructions and command lines to reproduce text evidence (`01-pytest.txt`, validators, `scan_repo.py`, `build_dashboard.py`).
+- Appended a new section "Công cụ bổ sung" to `README.md` documenting usage of `scripts/build_dashboard.py` and `scripts/scan_repo.py`.
+- Added test suite `tests/test_report.py` covering report structure, headings, bullets, relative evidence links, and absence of secrets/PII.
+- Verified test suite and security scan via `.venv/bin/python -m pytest -q` (89 passed) and `scripts/scan_repo.py`.

@@ -177,3 +177,24 @@ Không push bài làm trực tiếp lên repo đề bài và không dùng chung 
 - [RUBRIC.md](docs/RUBRIC.md), [RULES.md](docs/RULES.md), [SUBMISSION.md](docs/SUBMISSION.md): cách chấm, quy định và cách nộp.
 - [grading-evidence.md](docs/grading-evidence.md): checklist nhanh các ảnh/output cần thu thập.
 - [REPORT.md](submission/REPORT.md): báo cáo cá nhân duy nhất cần hoàn thiện.
+
+## Công cụ bổ sung
+
+### 1. Dựng Dashboard nội bộ (`scripts/build_dashboard.py`)
+
+Công cụ tạo dashboard HTML độc lập trực tiếp từ `data/logs.jsonl` theo cấu hình định nghĩa tại `config/dashboard.yaml`. Dashboard hiển thị 6 panel chuẩn hóa (Latency, Traffic, Errors, Cost, Tokens, Quality) kèm sparkline SVG và đánh dấu trạng thái ngưỡng (OK / BREACHED).
+
+```bash
+python scripts/build_dashboard.py [--logs data/logs.jsonl] [--config config/dashboard.yaml] [--out data/dashboard.html]
+```
+
+### 2. Quét Secret và PII trong Repository (`scripts/scan_repo.py`)
+
+Công cụ quét toàn bộ mã nguồn và tệp tin trong repository nhằm phát hiện sớm các thông tin nhạy cảm trước khi commit/push, bao gồm:
+- API key Langfuse và generic secret.
+- Dữ liệu định danh cá nhân (PII) theo `app.pii.PII_PATTERNS` (Email, Phone VN, CCCD, Thẻ thanh toán).
+- Các tệp tin bị cấm theo dõi trong git (`config/challenge.json`, `.env`).
+
+```bash
+python scripts/scan_repo.py [paths...]
+```
