@@ -19,3 +19,9 @@
 - Added Vietnamese address pattern (address_vn) matching house numbers followed by case-insensitive street keywords and names while preserving English text.
 - Created tests/test_pii_extended.py covering email, phone formats, CCCD, 16-digit cards, passports, Vietnamese addresses, and English text preservation.
 - Verified all tests pass cleanly using .venv/bin/python -m pytest -q.
+
+## Task 4: Child observations for retrieval and LLM generation
+- Added `start_observation` and updated `_DummyClient` in `app/tracing.py` to support fallback observation context managers.
+- Wrapped `retrieve(message)` in `LabAgent.run` with a child retriever observation, recording document count and capturing errors.
+- Wrapped `llm.generate` in `LabAgent.run` with a child generation observation containing prompt metadata, token usage, estimated cost, and completion start time.
+- Created `tests/test_agent_child_observations.py` covering observation lifecycle, metadata, PII redaction, and error handling.

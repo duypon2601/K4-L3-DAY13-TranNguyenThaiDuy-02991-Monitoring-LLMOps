@@ -4,6 +4,27 @@ import os
 from contextlib import contextmanager
 from typing import Any
 
+class _DummyObservation:
+    def update(self, **kwargs: Any) -> None:
+        return None
+
+
+@contextmanager
+def _noop_observation_context(**kwargs: Any):
+    yield _DummyObservation()
+
+
+class _DummyClient:
+    def update_current_span(self, **kwargs: Any) -> None:
+        return None
+
+    def update_current_generation(self, **kwargs: Any) -> None:
+        return None
+
+    def start_as_current_observation(self, **kwargs: Any):
+        return _noop_observation_context(**kwargs)
+
+
 try:
     from langfuse import get_client, observe, propagate_attributes
 
@@ -17,19 +38,22 @@ except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirement
 
         return decorator
 
-    class _DummyClient:
-        def update_current_span(self, **kwargs: Any) -> None:
-            return None
-
-        def update_current_generation(self, **kwargs: Any) -> None:
-            return None
-
     def get_client():
         return _DummyClient()
 
     @contextmanager
     def propagate_attributes(**kwargs: Any):
         yield
+
+
+def start_observation(client: Any, **kwargs: Any):
+    if (
+        client is not None
+        and hasattr(client, "start_as_current_observation")
+        and callable(client.start_as_current_observation)
+    ):
+        return client.start_as_current_observation(**kwargs)
+    return _noop_observation_context(**kwargs)
 
 
 def get_langfuse_client():
@@ -40,3 +64,4 @@ def tracing_enabled() -> bool:
     return LANGFUSE_SDK_AVAILABLE and bool(
         os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY")
     )
+
